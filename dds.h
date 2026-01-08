@@ -4,12 +4,10 @@
  * Brief:       Direct Digital Synthesis (DDS) engine for waveform generation.
  *
  * Created:     2026-01-01
- * Version:     1.0
+ * Version:     1.1
  *
  * Email:       ab.safagholi@gmail.com
  * GitHub:      https://github.com/AbolfazlSafa
- *
- * License:     MIT License
  *
  */
 
@@ -76,16 +74,20 @@ typedef enum {
 
 // Sounds Structure
 typedef struct {
+    dds_wave_t wave;
     uint32_t phase_acc;
     uint32_t phase_inc;
-    dds_wave_t wave;
+    uint8_t  amplitude;
 } dds_t;
 
 // Functions
 void dds_init(dds_t *dds);
+void dds_set_amp_8bit(dds_t *dds, uint8_t amp);
+void dds_set_amp_percent(dds_t *dds, float amp);
+void dds_set_wave(dds_t *dds, dds_wave_t waveform);
 void dds_set_freq(dds_t *dds, float freq_Hz, uint32_t sample_rate);
 void dds_set_note(dds_t *dds, dds_note_t note, uint32_t sample_rate);
-void dds_set_wave(dds_t *dds, dds_wave_t waveform);
+void dds_out_zero(dds_t *dds);
 
 uint8_t dds_next_sample(dds_t *dds);
 
