@@ -4,7 +4,7 @@
  * Brief:       Direct Digital Synthesis (DDS) engine for waveform generation.
  *
  * Created:     2026-01-01
- * Version:     1.1
+ * Version:     2.0
  *
  * Email:       ab.safagholi@gmail.com
  * GitHub:      https://github.com/AbolfazlSafa
@@ -18,11 +18,26 @@
 
 // Waveform Types
 typedef enum {
-    SINE,
-    SQUARE,
-    TRIANGLE,
-    SAWTOOTH,
+    DDS_SINE,
+    DDS_SQUARE,
+    DDS_TRIANGLE,
+    DDS_SAWTOOTH,
+    DDS_USER_DEFINED
 } dds_wave_t;
+
+// Bit Rate and Sample Quatity Select
+typedef enum {
+    DDS_8_BIT_256_SAMPLE,
+    DDS_8_BIT_1024_SAMPLE,
+    DDS_16_BIT_1024_SAMPLE
+} dds_brsq_t;
+
+// Interpolation Algorithm
+typedef enum {
+    DDS_INTERPOLATION_OFF,
+    DDS_INTERPOLATION_LINEAR,
+    DDS_INTERPOLATION_QUADRATIC
+} dds_intp_t;
 
 // Musical Notes Frequencies (x100)
 typedef enum {
@@ -72,23 +87,38 @@ typedef enum {
     Gs8 = 664488, A8  = 704000, As8 = 745862, B8  = 790213
 } dds_note_t;
 
+// Function Pointer for User Defined Functions
+typedef uint16_t(*dds_user_func_t)(uint32_t phase);
+
 // Sounds Structure
 typedef struct {
     dds_wave_t wave;
+    dds_brsq_t brsq;
+    dds_intp_t intp;
+
+    uint8_t  amplitude;
     uint32_t phase_acc;
     uint32_t phase_inc;
-    uint8_t  amplitude;
+
+    dds_user_func_t user_func;
 } dds_t;
 
 // Functions
 void dds_init(dds_t *dds);
 void dds_set_amp_8bit(dds_t *dds, uint8_t amp);
 void dds_set_amp_percent(dds_t *dds, float amp);
-void dds_set_wave(dds_t *dds, dds_wave_t waveform);
+void dds_set_wave(dds_t* dds, dds_wave_t waveform);
+void dds_set_bitR_sampleQ(dds_t* dds, dds_brsq_t bs);
+void dds_set_interpolation(dds_t* dds, dds_intp_t ip);
 void dds_set_freq(dds_t *dds, float freq_Hz, uint32_t sample_rate);
 void dds_set_note(dds_t *dds, dds_note_t note, uint32_t sample_rate);
+
+void dds_clear_user_wave(dds_t* dds);
+void dds_set_user_wave(dds_t* dds, dds_user_func_t func);
+void dds_set_user_phase_inc_32bit(dds_t* dds, uint32_t inc);
+
 void dds_out_zero(dds_t *dds);
 
-uint8_t dds_next_sample(dds_t *dds);
+uint16_t dds_next_sample(dds_t *dds);
 
 #endif
